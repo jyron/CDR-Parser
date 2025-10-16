@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -26,9 +27,9 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-def root():
-    """Root endpoint"""
+@app.get("/api")
+def api_info():
+    """API information endpoint"""
     return {
         "message": "CDR Parser API",
         "endpoints": {
@@ -130,4 +131,8 @@ def get_record_by_id(record_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"Record with ID {record_id} not found")
     
     return record.to_dict()
+
+
+# Mount frontend static files (must be last to not override API routes)
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 

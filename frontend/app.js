@@ -4,7 +4,7 @@ let filteredRecords = [];
 let currentSort = null; // 'asc', 'desc', or null
 
 // API Configuration
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "";
 
 // DOM Elements
 const loadingEl = document.getElementById("loading");
@@ -14,6 +14,14 @@ const resultsEl = document.getElementById("results");
 const recordCountEl = document.getElementById("record-count");
 const recordsTbodyEl = document.getElementById("records-tbody");
 const noResultsEl = document.getElementById("no-results");
+
+// Upload elements
+const uploadForm = document.getElementById("upload-form");
+const fileInput = document.getElementById("file-input");
+const uploadBtn = document.getElementById("upload-btn");
+const uploadBtnText = document.getElementById("upload-btn-text");
+const uploadSpinner = document.getElementById("upload-spinner");
+const uploadResult = document.getElementById("upload-result");
 
 // Filter inputs
 const filterInputs = {
@@ -236,5 +244,72 @@ function showResults() {
   resultsEl.classList.remove("d-none");
 }
 
+// Handle file upload
+async function handleUpload(event) {
+  event.preventDefault();
+
+  const file = fileInput.files[0];
+  if (!file) {
+    showUploadResult("Please select a file", "danger");
+    return;
+  }
+
+  // Show loading state
+  uploadBtn.disabled = true;
+  uploadBtnText.textContent = "Uploading...";
+  uploadSpinner.classList.remove("d-none");
+  uploadResult.classList.add("d-none");
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    // Show success message
+    showUploadResult(
+      `Success! Processed ${result.records_processed} records, stored ${result.records_stored} records.`,
+      "success"
+    );
+
+    // Reset form
+    uploadForm.reset();
+
+    // Refresh the records table
+    await fetchRecords();
+  } catch (error) {
+    showUploadResult(`Error: ${error.message}`, "danger");
+  } finally {
+    // Reset button state
+    uploadBtn.disabled = false;
+    uploadBtnText.textContent = "Upload and Parse";
+    uploadSpinner.classList.add("d-none");
+  }
+}
+
+// Show upload result message
+function showUploadResult(message, type) {
+  uploadResult.textContent = message;
+  uploadResult.className = `alert mt-3 alert-${type}`;
+  uploadResult.classList.remove("d-none");
+}
+
+// Setup upload form listener
+function setupUploadListener() {
+  uploadForm.addEventListener("submit", handleUpload);
+}
+
 // Initialize app
-document.addEventListener("DOMContentLoaded", fetchRecords);
+document.addEventListener("DOMContentLoaded", () => {
+  setupUploadListener();
+  fetchRecords();
+});

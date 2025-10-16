@@ -24,12 +24,51 @@ hologram_parser/
 
 ## Setup
 
-### Prerequisites
+### Option 1: Docker (Recommended)
+
+#### Prerequisites
+
+- Docker
+- Docker Compose
+
+#### Running with Docker
+
+1. Build and start the application:
+
+```bash
+docker-compose up --build
+```
+
+2. Access the application:
+
+- **Web Interface**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **API Endpoints**: http://localhost:8000/records
+
+3. Stop the application:
+
+```bash
+docker-compose down
+```
+
+#### Data Persistence
+
+The SQLite database is stored in a Docker volume named `cdr_data`, ensuring data persists across container restarts.
+
+To completely remove the database and start fresh:
+
+```bash
+docker-compose down -v
+```
+
+### Option 2: Local Python Installation
+
+#### Prerequisites
 
 - Python 3.8 or higher
 - pip
 
-### Installation
+#### Installation
 
 1. Install dependencies:
 

@@ -3,7 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # SQLite database configuration
-SQLALCHEMY_DATABASE_URL = "sqlite:///./cdr_records.db"
+import os
+os.makedirs("data", exist_ok=True)
+SQLALCHEMY_DATABASE_URL = "sqlite:///./data/cdr_records.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
