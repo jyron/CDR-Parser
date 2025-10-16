@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CDR Records Viewer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container py-5">
+      <h1 class="mb-4">CDR Records Viewer</h1>
+
+      <!-- Filters Section -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Filters (OR Logic - match any field)</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-2">
+              <label for="filter-id" class="form-label">ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-id"
+                placeholder="Filter by ID"
+              />
+            </div>
+            <div class="col-md-2">
+              <label for="filter-mnc" class="form-label">MNC</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-mnc"
+                placeholder="Filter by MNC"
+              />
+            </div>
+            <div class="col-md-2">
+              <label for="filter-bytes" class="form-label">Bytes Used</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-bytes"
+                placeholder="Filter by Bytes"
+              />
+            </div>
+            <div class="col-md-2">
+              <label for="filter-dmcc" class="form-label">DMCC</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-dmcc"
+                placeholder="Filter by DMCC"
+              />
+            </div>
+            <div class="col-md-2">
+              <label for="filter-cellid" class="form-label">Cell ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-cellid"
+                placeholder="Filter by Cell ID"
+              />
+            </div>
+            <div class="col-md-2">
+              <label for="filter-ip" class="form-label">IP Address</label>
+              <input
+                type="text"
+                class="form-control"
+                id="filter-ip"
+                placeholder="Filter by IP"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading records...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="alert alert-danger d-none" role="alert">
+        <h4 class="alert-heading">Error loading records</h4>
+        <p id="error-message"></p>
+        <hr />
+        <p class="mb-0">
+          Make sure the FastAPI server is running at
+          <code>http://localhost:8000</code>
+        </p>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>
+            Results: <span id="record-count" class="badge bg-primary">0</span>
+          </h5>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>MNC</th>
+                <th>
+                  Bytes Used
+                  <button
+                    id="sort-bytes-asc"
+                    class="btn btn-sm btn-outline-light ms-2"
+                    title="Sort Ascending (Low to High)"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    id="sort-bytes-desc"
+                    class="btn btn-sm btn-outline-light"
+                    title="Sort Descending (High to Low)"
+                  >
+                    ↓
+                  </button>
+                </th>
+                <th>DMCC</th>
+                <th>Cell ID</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody id="records-tbody">
+              <!-- Records will be inserted here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- No Results State -->
+        <div id="no-results" class="alert alert-info d-none" role="alert">
+          No records match the current filters.
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
