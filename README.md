@@ -17,14 +17,18 @@ hologram_parser/
 ├── models.py            # SQLAlchemy database models
 ├── cdr_parser.py        # CDR parsing logic
 ├── database.py          # Database configuration
+├── frontend/            # Web interface
+│   ├── index.html       # Upload UI and records viewer
+│   └── app.js           # JavaScript for upload and filtering
+├── Dockerfile           # Docker image definition
+├── docker-compose.yml   # Docker orchestration
 ├── requirements.txt     # Python dependencies
-├── input_file.txt       # Sample CDR file for testing
-└── README.md            # This file
+└── input_file.txt       # Sample CDR file
 ```
 
 ## Setup
 
-### Option 1: Docker (Recommended)
+### Option 1: Docker
 
 #### Prerequisites
 
@@ -39,11 +43,13 @@ hologram_parser/
 docker-compose up --build
 ```
 
-2. Access the application:
+2. Access the application at http://localhost:8000
 
-- **Web Interface**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-- **API Endpoints**: http://localhost:8000/records
+The web interface provides:
+
+- File upload for CDR files
+- Records viewer with filtering and sorting
+- Interactive API documentation at `/docs`
 
 3. Stop the application:
 
@@ -82,9 +88,20 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`
+The server will run at http://localhost:8000
 
-## API Endpoints
+## Usage
+
+### Web Interface
+
+Open http://localhost:8000 in your browser to access the web interface where you can:
+
+- Upload CDR files for parsing
+- View all stored records in a table
+- Filter records by any field
+- Sort records by bytes used
+
+### API Endpoints
 
 ### 1. Upload CDR File
 
@@ -206,16 +223,16 @@ Example: `16,be833279000000c063e5e63d`
 - cellid: `00000000` = 0
 - ip: `c0.63.e5.e6.3d` = `192.99.229.230.61`
 
-## Interactive API Documentation
+## API Documentation
 
-FastAPI provides automatic interactive API documentation:
+FastAPI provides interactive API documentation:
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
 ## Database
 
-Records are stored in a SQLite database (`cdr_records.db`) with the following schema:
+Records are stored in a SQLite database (`data/cdr_records.db`) with the following schema:
 
 | Field      | Type    | Nullable         |
 | ---------- | ------- | ---------------- |
@@ -226,26 +243,17 @@ Records are stored in a SQLite database (`cdr_records.db`) with the following sc
 | cellid     | INTEGER | Yes              |
 | ip         | STRING  | Yes              |
 
-## Testing with Sample Data
+## Testing
 
-Create a test file `input_file.txt`:
+The project includes a sample file `input_file.txt` with example CDR records in all three formats.
 
-```
-4,0d39f,0,495594,214
-16,be833279000000c063e5e63d
-9991,2935
-316,0e893279227712cac0014aff
-7194,b33,394,495593,192
-7291,293451
-```
-
-Upload it:
+You can upload it using the web interface at http://localhost:8000 or via curl:
 
 ```bash
 curl -X POST "http://localhost:8000/upload" -F "file=@input_file.txt"
 ```
 
-Then query the records:
+Query the records:
 
 ```bash
 curl "http://localhost:8000/records"
