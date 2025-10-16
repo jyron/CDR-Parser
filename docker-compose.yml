@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  cdr-parser:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - cdr_data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+volumes:
+  cdr_data:

@@ -1,0 +1,25 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Git
+.git/
+.gitignore
+
+# Database
+cdr_records.db
+
+# Documentation
+README.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
