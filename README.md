@@ -28,6 +28,7 @@ hologram_parser/
 ├── models.py            # SQLAlchemy database models
 ├── cdr_parser.py        # CDR parsing logic
 ├── database.py          # Database configuration
+├── test_cdr_parser.py   # Unit tests for CDR parser
 ├── frontend/            # Web interface (hosted at /dashboard)
 │   ├── index.html       # Upload UI and records viewer
 │   └── app.js           # JavaScript for upload and filtering
@@ -284,6 +285,24 @@ Records are stored in a SQLite database (`data/cdr_records.db`) with the followi
 | ip         | STRING  | Yes              |
 
 ## Testing
+
+### Unit Tests
+
+The project includes unit tests for the CDR parser functionality. Run them with:
+
+```bash
+python3 -m unittest test_cdr_parser.py -v
+```
+
+The tests verify:
+
+- Basic format parsing (ID, bytes_used)
+- Extended format parsing (ID, dmcc, mnc, bytes_used, cellid)
+- Hex format parsing (ID, mnc, bytes_used, cellid, IP)
+- Format detection based on record ID
+- Invalid data handling (empty lines, malformed records)
+
+### Sample Data
 
 The project includes sample files in the `test_data/` directory with example CDR records in all three formats.
 
