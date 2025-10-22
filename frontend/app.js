@@ -4,7 +4,7 @@ let filteredRecords = [];
 let currentSort = null; // 'asc', 'desc', or null
 
 // API Configuration
-const API_BASE_URL = "";
+const API_BASE_URL = "/api";
 
 // DOM Elements
 const loadingEl = document.getElementById("loading");
