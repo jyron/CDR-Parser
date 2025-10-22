@@ -8,22 +8,36 @@ A FastAPI-based service for parsing and storing Call Detail Records (CDR) in mul
 - Store normalized usage records in SQLite database
 - Query records via REST API
 - Automatic format detection based on record ID
+- Separated API and frontend with clear URL structure
+
+## Architecture
+
+The application separates backend and frontend concerns:
+
+- **Frontend Dashboard** (`/dashboard`): Web interface for uploading files and viewing records
+- **API** (`/api/*`): RESTful API endpoints for programmatic access
+- **Routes** (`routes.py`): All API route handlers in a dedicated module
+- **Main** (`main.py`): Application configuration, CORS, and router setup
 
 ## Project Structure
 
 ```
 hologram_parser/
-├── main.py              # FastAPI application and endpoints
+├── main.py              # FastAPI application setup and configuration
+├── routes.py            # API route handlers
 ├── models.py            # SQLAlchemy database models
 ├── cdr_parser.py        # CDR parsing logic
 ├── database.py          # Database configuration
-├── frontend/            # Web interface
+├── frontend/            # Web interface (hosted at /dashboard)
 │   ├── index.html       # Upload UI and records viewer
 │   └── app.js           # JavaScript for upload and filtering
 ├── Dockerfile           # Docker image definition
 ├── docker-compose.yml   # Docker orchestration
 ├── requirements.txt     # Python dependencies
-└── input_file.txt       # Sample CDR file
+└── test_data/           # Sample CDR files
+    ├── input_file.txt
+    ├── test_data_mixed.txt
+    └── test_data_valid.txt
 ```
 
 ## Setup
@@ -43,13 +57,16 @@ hologram_parser/
 docker-compose up --build
 ```
 
-2. Access the application at http://localhost:8000
+2. Access the application:
+   - **Web Dashboard**: http://localhost:8000/dashboard
+   - **API**: http://localhost:8000/api
+   - **API Documentation**: http://localhost:8000/docs
 
-The web interface provides:
+The web dashboard provides:
 
 - File upload for CDR files
 - Records viewer with filtering and sorting
-- Interactive API documentation at `/docs`
+- Real-time data refresh after uploads
 
 3. Stop the application:
 
@@ -94,22 +111,45 @@ The server will run at http://localhost:8000
 
 ### Web Interface
 
-Open http://localhost:8000 in your browser to access the web interface where you can:
+Open http://localhost:8000/dashboard in your browser to access the web interface where you can:
 
 - Upload CDR files for parsing
 - View all stored records in a table
-- Filter records by any field
-- Sort records by bytes used
+- Filter records by any field (using OR logic)
+- Sort records by bytes used (ascending or descending)
 
 ### API Endpoints
 
-### 1. Upload CDR File
+All API endpoints are prefixed with `/api`.
+
+#### 1. API Information
+
+Get API information and available endpoints.
+
+```bash
+curl "http://localhost:8000/api/"
+```
+
+**Response:**
+
+```json
+{
+  "message": "CDR Parser API",
+  "endpoints": {
+    "upload": "POST /api/upload",
+    "get_all": "GET /api/records",
+    "get_by_id": "GET /api/records/{id}"
+  }
+}
+```
+
+#### 2. Upload CDR File
 
 Upload and parse a CDR file.
 
 ```bash
-curl -X POST "http://localhost:8000/upload" \
-  -F "file=@input_file.txt"
+curl -X POST "http://localhost:8000/api/upload" \
+  -F "file=@test_data/input_file.txt"
 ```
 
 **Response:**
@@ -123,12 +163,12 @@ curl -X POST "http://localhost:8000/upload" \
 }
 ```
 
-### 2. Get All Records
+#### 3. Get All Records
 
 Retrieve all stored usage records.
 
 ```bash
-curl "http://localhost:8000/records"
+curl "http://localhost:8000/api/records"
 ```
 
 **Response:**
@@ -154,12 +194,12 @@ curl "http://localhost:8000/records"
 ]
 ```
 
-### 3. Get Record by ID
+#### 4. Get Record by ID
 
 Retrieve a specific record by its ID.
 
 ```bash
-curl "http://localhost:8000/records/16"
+curl "http://localhost:8000/api/records/16"
 ```
 
 **Response:**
@@ -245,16 +285,16 @@ Records are stored in a SQLite database (`data/cdr_records.db`) with the followi
 
 ## Testing
 
-The project includes a sample file `input_file.txt` with example CDR records in all three formats.
+The project includes sample files in the `test_data/` directory with example CDR records in all three formats.
 
-You can upload it using the web interface at http://localhost:8000 or via curl:
+You can upload them using the web interface at http://localhost:8000/dashboard or via curl:
 
 ```bash
-curl -X POST "http://localhost:8000/upload" -F "file=@input_file.txt"
+curl -X POST "http://localhost:8000/api/upload" -F "file=@test_data/input_file.txt"
 ```
 
 Query the records:
 
 ```bash
-curl "http://localhost:8000/records"
+curl "http://localhost:8000/api/records"
 ```
